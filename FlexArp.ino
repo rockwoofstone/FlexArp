@@ -18,7 +18,7 @@ volatile int clkState = LOW;
 int analogMode = 0; // Mode for playback of notes
 int analogScale = 1; // Scale to be used
 int analogDistanceAndSteps = 2; // Distance between each step in semitones, and number of notes to be played
-int analogOctaves = 3; // Number of octaves to be played.
+int analogOctavesOrRoot = 3; // Number of octaves to be played, or root note for arpeggio
 
 // Storage for current settings
 int distanceAndSteps, octaves, mode, scale, distance, steps, scaleLength;
@@ -89,7 +89,7 @@ void loop()
 {
   // Leave headroom on each to allow activation of control mode when required
   distanceAndSteps = analogRead(analogDistanceAndSteps) / ((1010/TOTAL_DISTANCE_AND_STEPS)+1);    
-  octaves = analogRead(analogOctaves) / ((1010/MAXIMUM_OCTAVES)+1);
+  octaves = analogRead(analogOctavesOrRoot) / ((1010/MAXIMUM_OCTAVES)+1);
   mode = analogRead(analogMode) / ((1010/TOTAL_MODES)+1);    
   scale = analogRead(analogScale) / ((1010/TOTAL_SCALES)+1);    
   
@@ -157,7 +157,7 @@ void loop()
           analogMode = 0;
           analogScale = 1;
           analogDistanceAndSteps = 2;
-          analogOctaves = 3;
+          analogOctavesOrRoot = 3;
           digitalWrite(digPin[0], LOW);
           digitalWrite(digPin[1], LOW);  
           break;
@@ -165,7 +165,7 @@ void loop()
           analogMode = 0;
           analogScale = 3;
           analogDistanceAndSteps = 2;
-          analogOctaves = 1;
+          analogOctavesOrRoot = 1;
           digitalWrite(digPin[0], LOW);
           digitalWrite(digPin[1], HIGH);  
           break;
@@ -173,7 +173,7 @@ void loop()
           analogMode = 3;
           analogScale = 1;
           analogDistanceAndSteps = 2;
-          analogOctaves = 0;
+          analogOctavesOrRoot = 0;
           digitalWrite(digPin[0], HIGH);
           digitalWrite(digPin[1], LOW);  
           break;
@@ -181,7 +181,7 @@ void loop()
           analogMode = 1;
           analogScale = 3;
           analogDistanceAndSteps = 0;
-          analogOctaves = 2;
+          analogOctavesOrRoot = 2;
           digitalWrite(digPin[0], HIGH);
           digitalWrite(digPin[1], HIGH);  
           break;
@@ -189,7 +189,7 @@ void loop()
           analogMode = 3;
           analogScale = 1;
           analogDistanceAndSteps = 0;
-          analogOctaves = 2;
+          analogOctavesOrRoot = 2;
           if (flash)
           {
             digitalWrite(digPin[0], LOW);
@@ -207,7 +207,7 @@ void loop()
           analogMode = 2;
           analogScale = 3;
           analogDistanceAndSteps = 0;
-          analogOctaves = 1;
+          analogOctavesOrRoot = 1;
           if (flash)
           {
             digitalWrite(digPin[0], HIGH);
