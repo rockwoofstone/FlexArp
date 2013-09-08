@@ -1,9 +1,14 @@
 #include <math.h>
+////////////////////////////////////////////////////////////////////////
+//
 // FlexArp by rockwoofstone
 // =========================
 //
 // This project started out using the Arpeggiator created by theDug_ardcoremaster as a basis for the code.
-// A few fragments of that still remain, so many thanks for the initial inspiration!
+// It's now quite a different beast....!
+// A few fragments of the original still remain, so many thanks for the initial inspiration!
+//
+////////////////////////////////////////////////////////////////////////
 
 #define DEBUG_OUTPUT false
 
@@ -73,6 +78,13 @@ int previousAltStep = 0;
 
 void setup() 
 {
+
+  ////////////////////////////////////////////////////////////////////////
+  //
+  // Initialise the board
+  //
+  ////////////////////////////////////////////////////////////////////////
+
   // if you need to send data back to your computer, you need
   // to open the serial device. Otherwise, comment this line out.
   Serial.begin(9600);
@@ -103,6 +115,13 @@ void setup()
 
 void loop() 
 {
+  ////////////////////////////////////////////////////////////////////////
+  //
+  // Read the control values, and set variables appropriately, dependent
+  // on the modes currently set.
+  //
+  ////////////////////////////////////////////////////////////////////////
+    
   // Leave headroom on each to allow activation of control mode when required
   distanceAndSteps = analogRead(analogDistanceAndSteps) / ((REDUCED_POT_RANGE/TOTAL_DISTANCE_AND_STEPS)+1);    
   mode = analogRead(analogMode) / ((REDUCED_POT_RANGE/TOTAL_MODES)+1);    
@@ -143,8 +162,15 @@ void loop()
       break;
   }
 
+  // Turn the LEDs off.
   digitalWrite(digPin[0], LOW);
   digitalWrite(digPin[1], LOW);  
+  
+  ////////////////////////////////////////////////////////////////////////
+  //
+  // Control Mode Handling
+  //
+  ////////////////////////////////////////////////////////////////////////  
 
   // Control mode allows the allocation of controls to be moved around to allow different settings
   // to be available via CV on A2 and A3.
@@ -191,11 +217,10 @@ void loop()
   //   Octaves - parameter covers the range of available octaves
   //   Root - parameter covers the range of available root notes
   //   Both - parameter covers both - first the root notes, then the octaves.
-  // To use the "Both" mode, you'll need to sequence the parameter with CV, as any continuous change will result in either
-  // a root note setting as desired, but the minimum octave setting, or the desired octave seting, but the maximum root note value,
+  // To use the "Both" mode, you'll need to control the parameter with discrete (rather than continuous) CV, as any continuous change will result in either
+  // a root note setting as desired, but the minimum octave setting being used, or the desired octave seting, but the maximum root note value,
   // as the pot (or continuous CV) sweeps past the point at which control transfers between both parameters.
   // Fiddly, but as we have a limited number of inputs, this is a compromise to allow both settings to be changed.
-  
   
   if (analogRead(3) > REDUCED_POT_RANGE && analogRead(2) > REDUCED_POT_RANGE) // Always bottom controls to enter congtrol mode
   {
@@ -320,22 +345,32 @@ void loop()
     Serial.print("Selected layout:");
     Serial.println(selectedLayout);
   }
+
+  ////////////////////////////////////////////////////////////////////////
+  //
+  // Main handling routine
+  //
+  ////////////////////////////////////////////////////////////////////////
   
   // React if the clock tick has been set by the interrupt
   if (clkState == HIGH)
   {
     clkState = LOW;
     
+    // Extract the distance and steps values from the combined parameter
     distance = (distanceAndSteps / 4) + 1;
     steps = (distanceAndSteps % 4) + 3;
 
+    // Work out how long the curent scale is
     scaleLength = 1; // See comment below for why we start at 1;
     for (int i = 1; i < MAX_SCALE_LENGTH; i++)  // Start at 1 as the first value in each scale is the root :- "0", which won't increment the count.
       if (scales[scale][i] > 0)
         scaleLength++;
 
+    // Calculate the note to play from the selected scale, including the offset presented by the current root note value.
     noteToPlay = (currentStep * distance) + root;
 
+    // If the note to play is higher than the number of notes in the scale, reduce by actaves, and keep track of those to be added back in later.
     octaveAdjustment = 0;
     while (noteToPlay >= scaleLength)
     {
@@ -343,6 +378,7 @@ void loop()
       octaveAdjustment++;
     }
 
+    // If the incrementing octave value is higher than the number we have selected, reset back to the beginning
     if (currentOctave > octaves)
       currentOctave = 0;
 
@@ -363,35 +399,16 @@ void loop()
       if (currentOctave == 0 && currentStep == 0)
         Serial.println("---");
     
+    // Flash D1 every time the octave changes. If only running a single octave, the LED will never flash.
     digitalWrite(digPin[1], (currentOctave != previousOctave));  
 
+    // Remember which octave we're in for use next time through the main loop.
     previousOctave = currentOctave;
     
     if (DEBUG_OUTPUT)
-    {
-      Serial.print("M:");
-      Serial.print(mode);
-      Serial.print(" / SL:");
-      Serial.print(scaleLength);
-      Serial.print(" / D:");
-      Serial.print(distance);
-      Serial.print(" / S:");
-      Serial.print(steps);
-      Serial.print(" / CO:");
-      Serial.print(currentOctave);
-      Serial.print(" / OA:");
-      Serial.print(octaveAdjustment);
-      Serial.print(" / R:");
-      Serial.print(root);
-      Serial.print(" / CS:");
-      Serial.print(currentStep);
-      Serial.print(" / PN:");
-      Serial.print(previousNon0Step);
-      Serial.print(" / NTP:");
-      Serial.print(noteToPlay);
-      Serial.print(" = ");
-    }
+      debugOut1();
     
+    // Convert the note position in the scale into a "real" note ready to send to the DAC.
     int noteValue = scales[scale][noteToPlay];
     
     int note = (noteValue * 4) + (12 * 4 * (currentOctave + octaveAdjustment));
@@ -401,16 +418,16 @@ void loop()
       note = (noteValue * 4) + (12 * 4 * (currentOctave + octaveAdjustment - 5));
 
     if (DEBUG_OUTPUT)
-    {
-      Serial.print(currentOctave + octaveAdjustment);
-      Serial.print(",");
-      Serial.print(noteValue);
-      Serial.print(":");
-      Serial.println(note);
-    }
+      debugOut2(noteValue, note);
 
     dacOutput(note);
     
+    ////////////////////////////////////////////////////////////////////////
+    //
+    // Calculate the next note
+    //
+    ////////////////////////////////////////////////////////////////////////
+
     switch (mode)
     {
       case 0: // Up
@@ -568,6 +585,46 @@ void loop()
   }
 }
 
+////////////////////////////////////////////////////////////////////////
+//
+// Utility routines
+//
+////////////////////////////////////////////////////////////////////////
+
+void debugOut1()
+{
+  Serial.print("M:");
+  Serial.print(mode);
+  Serial.print(" / SL:");
+  Serial.print(scaleLength);
+  Serial.print(" / D:");
+  Serial.print(distance);
+  Serial.print(" / S:");
+  Serial.print(steps);
+  Serial.print(" / CO:");
+  Serial.print(currentOctave);
+  Serial.print(" / OA:");
+  Serial.print(octaveAdjustment);
+  Serial.print(" / R:");
+  Serial.print(root);
+  Serial.print(" / CS:");
+  Serial.print(currentStep);
+  Serial.print(" / PN:");
+  Serial.print(previousNon0Step);
+  Serial.print(" / NTP:");
+  Serial.print(noteToPlay);
+  Serial.print(" = ");
+}
+
+void debugOut2(int noteValue, int note)
+{
+  Serial.print(currentOctave + octaveAdjustment);
+  Serial.print(",");
+  Serial.print(noteValue);
+  Serial.print(":");
+  Serial.println(note);
+}
+
 //  isr() - quickly handle interrupts from the clock input
 //  ------------------------------------------------------
 void isr()
@@ -592,4 +649,4 @@ void dacOutput(long v)
   }
 }
 
-//  ===================== end of program =======================
+////////////////////////////////////////////////////////////////////////
