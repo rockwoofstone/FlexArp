@@ -244,7 +244,7 @@ void loop()
           delay(250);          
         }
         digitalWrite(digPin[0], LOW);
-        delay (2000); // Give a pause to visually differentiate between these flashes and the layout setting.
+        delay (1000); // Give a pause to visually differentiate between these flashes and the layout setting.
       }
 
       // Get the default number of octaves to cover (for use in root mode) from the top right control.
@@ -262,7 +262,7 @@ void loop()
           delay(250);          
         }
         digitalWrite(digPin[1], LOW);
-        delay (2000); // Give a pause to visually differentiate between these flashes and the layout setting.
+        delay (1000); // Give a pause to visually differentiate between these flashes and the layout setting.
       }
       
       // Now deal with the layout mode selection
