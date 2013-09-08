@@ -5,7 +5,7 @@
 // =========================
 //
 // This project started out using the Arpeggiator created by theDug_ardcoremaster as a basis for the code.
-// It's now quite a different beast....!
+// It's now quite a different beast....
 // A few fragments of the original still remain, so many thanks for the initial inspiration!
 //
 ////////////////////////////////////////////////////////////////////////
@@ -238,13 +238,13 @@ void loop()
       {
         for (int i = 0; i <= rootOrOctavesMode; i++) // Flash D1 from 1 to 3 times depending on the mode.
         {
-          digitalWrite(digPin[1], LOW);
+          digitalWrite(digPin[0], LOW);
           delay(250);
-          digitalWrite(digPin[1], HIGH);
+          digitalWrite(digPin[0], HIGH);
           delay(250);          
         }
-        digitalWrite(digPin[1], LOW);
-        delay (1000); // Give a pause to visually differentiate between these flashes and the layout setting.
+        digitalWrite(digPin[0], LOW);
+        delay (2000); // Give a pause to visually differentiate between these flashes and the layout setting.
       }
 
       // Get the default number of octaves to cover (for use in root mode) from the top right control.
@@ -256,13 +256,13 @@ void loop()
       {
         for (int i = 0; i <= defaultOctaves; i++) // Flash D0 once for each octave.
         {
-          digitalWrite(digPin[0], LOW);
+          digitalWrite(digPin[1], LOW);
           delay(250);
-          digitalWrite(digPin[0], HIGH);
+          digitalWrite(digPin[1], HIGH);
           delay(250);          
         }
-        digitalWrite(digPin[0], LOW);
-        delay (1000); // Give a pause to visually differentiate between these flashes and the layout setting.
+        digitalWrite(digPin[1], LOW);
+        delay (2000); // Give a pause to visually differentiate between these flashes and the layout setting.
       }
       
       // Now deal with the layout mode selection
