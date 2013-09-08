@@ -384,7 +384,7 @@ void loop()
 
     switch (mode) // To deal with flashes at the very start of each arp (i.e. start of the first octave).
     {
-      case 1: // "Down" mode - flash at last step.
+      case 1: // "Down" mode - flash at highest step.
         digitalWrite(digPin[0], (currentOctave == 0 && currentStep == (steps - 1)));  
         break;
       case 3: // "Root-up" mode - flash at the first play of step 0.
