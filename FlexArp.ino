@@ -37,9 +37,8 @@ int distanceAndSteps, octaves, mode, scale, distance, steps, scaleLength, root;
 #define MAX_ROOT_NOTES 8
 #define TOTAL_ROOT_OR_OCTAVES_MODES 3
 
-// Startup defaults for root and octaves mode and octave value.
 int rootOrOctavesMode = ROOT_MODE;
-int defaultOctaves = 3; // i.e. play 4 octaves by default.
+int defaultOctaves = 0; //
 
 #define MAX_SCALE_LENGTH 13 // Max of 13 to allow for the end of scale marker - i.e. "0"
 #define TOTAL_SCALES 13
