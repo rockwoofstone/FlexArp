@@ -11,4 +11,5 @@ Provides control of:
 * Number of steps in the arpeggio
 * Mode of playback of the arpeggio
 * Number of octaves the arpeggio is repeated over
+* Configuration of layout and operation of controls
 
