@@ -220,7 +220,6 @@ void loop()
   if (analogRead(3) > REDUCED_POT_RANGE && analogRead(2) > REDUCED_POT_RANGE) // Always bottom controls to enter congtrol mode
   {
     int selectedLayout = 0;
-    Serial.println("Control Mode");
     boolean flash = false;
     while (analogRead(3) > REDUCED_POT_RANGE) // Always bottom right control to stay in control mode
     {
@@ -337,8 +336,6 @@ void loop()
           break;
       }
     }
-    Serial.print("Selected layout:");
-    Serial.println(selectedLayout);
   }
 
   ////////////////////////////////////////////////////////////////////////
