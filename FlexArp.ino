@@ -148,13 +148,9 @@ void loop()
     {
       int tmpValue = analogRead(analogOctavesOrRoot) / ((REDUCED_POT_RANGE/(MAX_ROOT_NOTES+MAX_OCTAVES))+1);
       if (tmpValue < MAX_ROOT_NOTES)
-      {
         root = tmpValue;
-      }
       else
-      {
         octaves = tmpValue - MAX_ROOT_NOTES;
-      }
       break;
     }
     default:
