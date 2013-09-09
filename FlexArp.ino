@@ -213,11 +213,11 @@ void loop()
   //   Root - parameter covers the range of available root notes
   //   Both - parameter covers both - first the root notes, then the octaves.
   // To use the "Both" mode, you'll need to control the parameter with discrete (rather than continuous) CV, as any continuous change will result in either
-  // a root note setting as desired, but the minimum octave setting being used, or the desired octave seting, but the maximum root note value,
+  // a root note setting as desired, but the minimum octave setting being used, or the desired octave setting, but the maximum root note value,
   // as the pot (or continuous CV) sweeps past the point at which control transfers between both parameters.
   // Fiddly, but as we have a limited number of inputs, this is a compromise to allow both settings to be changed.
   
-  if (analogRead(3) > REDUCED_POT_RANGE && analogRead(2) > REDUCED_POT_RANGE) // Always bottom controls to enter congtrol mode
+  if (analogRead(3) > REDUCED_POT_RANGE && analogRead(2) > REDUCED_POT_RANGE) // Always bottom controls to enter control mode
   {
     int selectedLayout = 0;
     boolean flash = false;
@@ -230,7 +230,7 @@ void loop()
       // If the rootOrOctavesMode value has changed, give some feedback of the mode selected.
       if (rootOrOctavesMode != previousRootOrOctavesMode)
       {
-        for (int i = 0; i <= rootOrOctavesMode; i++) // Flash D1 from 1 to 3 times depending on the mode.
+        for (int i = 0; i <= rootOrOctavesMode; i++) // Flash D0 from 1 to 3 times depending on the mode.
         {
           digitalWrite(digPin[0], LOW);
           delay(250);
@@ -248,7 +248,7 @@ void loop()
       // If the defaultOctaves value has changed, give some feedback of the number of octaves selected.
       if (defaultOctaves != previousDefaultOctaves)
       {
-        for (int i = 0; i <= defaultOctaves; i++) // Flash D0 once for each octave.
+        for (int i = 0; i <= defaultOctaves; i++) // Flash D1 once for each octave.
         {
           digitalWrite(digPin[1], LOW);
           delay(250);
@@ -391,7 +391,7 @@ void loop()
       if (currentOctave == 0 && currentStep == 0)
         Serial.println("---");
     
-    // Flash D1 every time the octave changes. If only running a single octave, the LED will never flash.
+    // Flash D1 every time the octave changes. If only running a single octave, the LED should not flash.
     digitalWrite(digPin[1], (currentOctave != previousOctave));  
 
     // Remember which octave we're in for use next time through the main loop.
