@@ -1,4 +1,4 @@
-FlexArp is a flexible arpeggiator for the SnazzyFX ardcore Eurorack module. It Should also work on any other ardcore implementation.
+FlexArp is a flexible arpeggiator for the SnazzyFX ardcore Eurorack module. It should also work on any other ardcore implementation.
 
 Provides control of:
 
